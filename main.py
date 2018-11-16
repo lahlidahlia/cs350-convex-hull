@@ -2,38 +2,90 @@ from sys import argv
 import numpy as np
 import matplotlib.pyplot as plt
 
-# `gen_rand_points` takes in `N`, the number of points to be generated.
-# An array of random, unique points is returned.
-# (Returned array could include three or more collinear points)
-def gen_rand_points(N):
-    x = np.arange(N)
-    y = np.arange(N)
-    np.random.shuffle(x)
-    np.random.shuffle(y)
-
-    return np.column_stack((x, y))
-
-# N = 10
-points = gen_rand_points(10)
-
 # Properties of the points
-color = 'r'
-area  = 20
-alpha = 0.75
+p_color = 'r'
+p_area  = 20
+p_alpha = 0.75
 
-if '-v' in argv: # Create visualization
-    fig, (axG, axQ) = plt.subplots(1, 2, sharey=True)
-    x, y = points.T
+# Properties of the lines
+l_color = 'b'
+l_alpha = 0.5
 
-    # Gift Wrapping algorithm plot
-    axG.scatter(x, y, s=area, c=color, alpha=alpha)
-    axG.set_title('Gift Wrapping')
-    axG.set_xlabel('X')
-    axG.set_ylabel('Y')
+# Takes in the array of points, and returns the point
+# furthest on the left-side.
+def left_most_point(points):
+    leftMost = []
+    N = len(points)
+    for i in range(N):
+        if not leftMost or points[i][0] < leftMost[0]:
+            leftMost = list(points[i])
+    return leftMost
 
-    # Quick Hull algorithm plot
-    axQ.scatter(x, y, s=area, c=color, alpha=alpha)
-    axQ.set_title('Quick Hull')
-    axQ.set_xlabel('X')
+# Gift Wrapping algorithm that takes in the array of
+# points and the list of lines that are to be displayed.
+# Returns the convex hull as a 2D array
+def gift_wrap(points, lines):
+    result = []
+    pointOnHull = left_most_point(points)
+    N = len(points)
 
-    plt.show()
+    endPoint = []
+    i = 0
+    while True:
+        result.append(np.array(pointOnHull))
+        endPoint = list(points[0])
+        for j in range(1, N):
+            oldLine = np.subtract(endPoint,  result[i])
+            newLine = np.subtract(points[j], result[i])
+           
+            if endPoint == pointOnHull or np.cross(newLine, oldLine) < 0:
+                endPoint = list(points[j])
+        i += 1
+        pointOnHull = endPoint
+
+        if endPoint == list(result[0]):
+            break
+        elif '-v' in argv:
+            x, y = np.array(result).T
+            if lines:
+                lines.pop(0).remove()
+            lines = plt.plot(x, y, c=l_color, alpha=l_alpha)
+            plt.pause(0.001)
+
+    result = np.array(result)
+
+    if '-v' in argv:
+        x, y = np.vstack((result, result[0])).T
+        if lines:
+            lines.pop(0).remove()
+        lines = plt.plot(x, y, c=l_color, alpha=l_alpha)
+        plt.pause(0.001)
+
+    return result
+
+if __name__ == '__main__':
+    points = np.random.rand(10, 2)
+    lines = []
+
+    if '-v' in argv:
+        x, y = points.T
+        plt.scatter(x, y, s=p_area, c=p_color, alpha=p_alpha)
+
+        # Gift Wrapping algorithm plot
+        plt.title('Gift Wrapping')
+        plt.xlabel('X')
+        plt.ylabel('Y')
+
+    print("Gift Wrap results:")
+    print(gift_wrap(points, lines))
+
+    # if '-v' in argv:
+         #Quick Hull algorithm plot
+    #     if lines:
+    #         lines.pop(0).remove()
+    #     plt.title('Quick Hull')
+
+    # TODO: implement quick_hull(points)
+
+    if '-v' in argv:
+        plt.show()
