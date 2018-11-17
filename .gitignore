@@ -1,5 +1,3 @@
-# Frame images
-frames/*.png
 # Vim swap files
 .*.swp
 
