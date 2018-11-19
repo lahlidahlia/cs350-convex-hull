@@ -18,14 +18,17 @@ l_color = 'b'
 l_alpha = 0.75
 
 # Visual components
-timer = 0
 lines = []
+timer = 0
+
+# The start time of the timer
+start_time = 0
 
 # Plots connected lines based on the provided points.
 # Displays a timer based on the provided start time.
 # Saves a `.png` file of the current frame
-def draw_lines(points, start_time, file_name):
-    global lines, timer
+def draw_lines(points, file_name):
+    global lines, timer, start_time
     x, y = points.T
     if lines:
         lines.pop(0).remove()
@@ -47,7 +50,7 @@ def left_most_point(points):
 # Gift Wrapping algorithm that takes in the array of
 # points and the list of lines that are to be displayed.
 # Returns the convex hull as a 2D array
-def gift_wrap(points, start_time):
+def gift_wrap(points):
     result = []
     pointOnHull = left_most_point(points)
     N = len(points)
@@ -69,12 +72,12 @@ def gift_wrap(points, start_time):
         if endPoint == list(result[0]):
             break
         elif visual:
-            draw_lines(np.array(result), start_time, str(i))
+            draw_lines(np.array(result), str(i))
 
     result = np.array(result)
 
     if visual:
-        draw_lines(np.vstack((result, result[0])), start_time, str(i))
+        draw_lines(np.vstack((result, result[0])), str(i))
 
     return result
 
@@ -94,16 +97,19 @@ if __name__ == '__main__':
         timer = plt.text(0, 1, "0.0 sec")
 
     start_time = time.time()
-    print("Gift Wrap results:\n" + str(gift_wrap(points, start_time)))
+    print("Gift Wrap results:\n" + str(gift_wrap(points)))
     print("Solved in %.2f seconds" % (time.time() - start_time))
 
+    # TODO: Implemented Quick Hull Algorithm
     # if visual:
     #     if lines:
     #         lines.pop(0).remove()
     #     plt.title('Quick Hull')
     #     timer = plt.text(0, 1, "0.0 sec")
 
-    # TODO: implement quick_hull(points)
+    # start_time = time.time()
+    # print("Quick Hull results:\n" + str(quick_hull(points)))
+    # print("Solved in %.2f seconds" % (time.time() - start_time))
 
     if visual:
         plt.show()
