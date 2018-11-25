@@ -23,7 +23,7 @@ def lr_most_point(points):
             rightMost = points[i]
     return (leftMost, rightMost)
 
-# Returns the distance between the point C,
+# Returns the shortest distance between the point C,
 # and the line segment connected by P and Q.
 def dist(P, Q, C):
     A = np.subtract(P, C)
