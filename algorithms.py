@@ -94,7 +94,7 @@ def gift_wrap(points, start_time):
 # Quick Hull algorithm that takes in the array of
 # points, and the start time of the timer.
 # Returns the convex hull as a list of arrays.
-def quick_hull(points, start_time):
+def quickhull(points, start_time):
     if points.size == 0:
         return []
 

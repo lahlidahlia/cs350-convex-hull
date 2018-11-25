@@ -21,26 +21,26 @@ if __name__ == '__main__':
         init_plot(points)
        
     if config.run_gift_wrap:
-        print("Solving with Gift Wrap")
+        print("Solving with Gift Wrapping Algorithm")
         if config.visual:
-            reset_plot('Gift Wrap')
+            reset_plot('Gift Wrapping')
         start_time = time.time()
         gw_results = gift_wrap(points, start_time)
         end_time = time.time() - start_time
 
         print("Solved in %.2f seconds\n" % end_time)
 
-    if config.run_quick_hull:
-        print("Solving with Quick Hull")
+    if config.run_quickhull:
+        print("Solving with Quickhull Algorithm")
         if config.visual:
-            reset_plot('Quick Hull')
+            reset_plot('Quickhull')
         start_time = time.time()
-        qh_results = quick_hull(points, start_time)
+        qh_results = quickhull(points, start_time)
         end_time = time.time() - start_time
 
         print("Solved in %.2f seconds\n" % end_time)
 
-    if config.run_gift_wrap and config.run_quick_hull:
+    if config.run_gift_wrap and config.run_quickhull:
         if (np.array(gw_results) == np.array(qh_results)).all():
             print("Results match!")
         else:
