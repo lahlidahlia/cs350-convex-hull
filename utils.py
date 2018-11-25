@@ -1,26 +1,24 @@
 import numpy as np
 
-# Takes in the array of points, and returns the point
+# Takes in the list of points, and returns the point
 # furthest on the left side.
 def left_most_point(points):
-    leftMost = np.array([])
-    N = len(points)
-    for i in range(N):
-        if leftMost.size == 0 or points[i][0] < leftMost[0]:
-            leftMost = points[i]
+    leftMost = []
+    for point in points:
+        if not leftMost or point[0] < leftMost[0]:
+            leftMost = list(point)
     return leftMost
 
-# Takes in the array of points, and returns the points
+# Takes in the list of points, and returns the points
 # furthest on the left and right sides as a tuple.
 def lr_most_point(points):
-    leftMost = np.array([])
-    rightMost = np.array([])
-    N = len(points)
-    for i in range(N):
-        if leftMost.size == 0 or points[i][0] < leftMost[0]:
-            leftMost = points[i]
-        if rightMost.size == 0 or points[i][0] > rightMost[0]:
-            rightMost = points[i]
+    leftMost  = []
+    rightMost = []
+    for point in points:
+        if not leftMost or point[0] < leftMost[0]:
+            leftMost = list(point)
+        if not rightMost or point[0] > rightMost[0]:
+            rightMost = list(point)
     return (leftMost, rightMost)
 
 # Returns the shortest distance between the point C,

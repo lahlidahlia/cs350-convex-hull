@@ -7,6 +7,7 @@ from sys import argv
 
 if __name__ == '__main__':
     points = np.random.rand(config.N, 2)
+    bf_results = []
     gw_results = []
     qh_results = []
     if '-v' in argv or '--visual' in argv:
@@ -20,6 +21,17 @@ if __name__ == '__main__':
 
         init_plot(points)
        
+    if config.run_brute_force:
+        print("Solving with Brute Force Algorithm")
+        if config.visual:
+            reset_plot('Brute Force')
+        start_time = time.time()
+        bf_results = brute_force(points, start_time)
+        print(bf_results)
+        end_time = time.time() - start_time
+
+        print("Solved in %.2f seconds\n" % end_time)
+
     if config.run_gift_wrap:
         print("Solving with Gift Wrapping Algorithm")
         if config.visual:
@@ -40,11 +52,26 @@ if __name__ == '__main__':
 
         print("Solved in %.2f seconds\n" % end_time)
 
+    # if config.run_brute_force and config.run_gift_wrap:
+    #     print("Brute Force and Gift Wrapping comparision:")
+    #     if (np.array(bf_results) == np.array(gw_results)).all():
+    #         print("\tResults match!")
+    #     else:
+    #         print("\tResults don't match!")
+
+    # if config.run_brute_force and config.run_quickhull:
+    #     print("Brute Force and Quickhull comparision:")
+    #     if (np.array(bf_results) == np.array(qh_results)).all():
+    #         print("\tResults match!")
+    #     else:
+    #         print("\tResults don't match!")
+
     if config.run_gift_wrap and config.run_quickhull:
-        if (np.array(gw_results) == np.array(qh_results)).all():
-            print("Results match!")
+        print("Gift Wrapping and Quickhull comparision:")
+        if gw_results == qh_results:
+            print("\tResults match!")
         else:
-            print("Results don't match!")
+            print("\tResults don't match!")
 
     if config.visual:
         plt.show()

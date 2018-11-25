@@ -26,9 +26,45 @@ def draw(start_time):
     config.timer.set_text("%.2f sec" % (time.time() - start_time))
     plt.pause(config.visual_delay)
 
+# Brute Force algorithm that takes in the array of
+# points and start time of the timer.
+# Returns the convex hull as a list.
+def brute_force(points, start_time):
+    result = []
+    N = len(points)
+    print(points)
+    for i in range(N):
+        for j in range(N):
+            if (points[i] == points[j]).all():
+                continue
+            side = 0
+            for k in range(N):
+                if (points[i] == points[k]).all() or \
+                   (points[j] == points[k]).all():
+                    continue
+                ItoJ = np.subtract(points[j], points[i])
+                ItoK = np.subtract(points[i], points[k])
+                newSide = np.cross(ItoJ, ItoK)
+                if newSide != 0:
+                    if side == 0:
+                        side = newSide
+                    elif (side < 0 and newSide > 0) or \
+                         (side > 0 and newSide < 0):
+                        side = False
+                        break
+                    else:
+                        pass
+            if side:
+                if points[i] not in points[:0]:
+                    result.append(points[i])
+                if points[j] not in points[:0]:
+                    result.append(points[j])
+
+    return result
+
 # Gift Wrapping algorithm that takes in the array of
 # points and start time of the timer.
-# Returns the convex hull as a list of arrays.
+# Returns the convex hull as a list.
 def gift_wrap(points, start_time):
     if points.size == 0:
         return []
@@ -41,11 +77,11 @@ def gift_wrap(points, start_time):
     c_y = [pointOnHull[1]]
 
     N = len(points)
-    endPoint = np.array([])
+    endPoint = []
     i = 0
     while True:
         result.append(pointOnHull)
-        endPoint = points[0]
+        endPoint = list(points[0])
         oldLine = np.subtract(endPoint,  result[i])
 
         if config.visual:
@@ -58,9 +94,8 @@ def gift_wrap(points, start_time):
         for j in range(1, N):
             newLine = np.subtract(points[j], result[i])
            
-            if (endPoint == pointOnHull).all() \
-                    or np.cross(newLine, oldLine) < 0:
-                endPoint = points[j]
+            if endPoint == pointOnHull or np.cross(newLine, oldLine) < 0:
+                endPoint = list(points[j])
                 oldLine = np.subtract(endPoint,  result[i])
                 if config.visual:
                     x, y = np.vstack((endPoint,  result[i])).T
@@ -83,7 +118,7 @@ def gift_wrap(points, start_time):
         i += 1
         pointOnHull = endPoint
 
-        if (endPoint == result[0]).all():
+        if endPoint == list(result[0]):
             break
     
     if config.visual:
@@ -91,9 +126,9 @@ def gift_wrap(points, start_time):
         draw(start_time)
     return result
 
-# Quick Hull algorithm that takes in the array of
+# Quickhll algorithm that takes in the array of
 # points, and the start time of the timer.
-# Returns the convex hull as a list of arrays.
+# Returns the convex hull as a list.
 def quickhull(points, start_time):
     if points.size == 0:
         return []
@@ -114,24 +149,23 @@ def quickhull(points, start_time):
     for i in range(N):
         newLine = np.subtract(result[0], points[i])
         if np.cross(oldLine, newLine) > 0:
-            S1.append(points[i])
-        elif (points[i] != result[0]).all() \
-                and (points[i] != result[1]).all():
-            S2.append(points[i])
+            S1.append(list(points[i]))
+        elif list(points[i]) != result[0] and list(points[i]) != result[1]:
+            S2.append(list(points[i]))
 
-    find_hull(S1, result[0], result[1], 1, result, start_time)
+    find_hull(S1, result[0],  result[1], 1,           result, start_time)
     find_hull(S2, result[-1], result[0], len(result), result, start_time)
     if config.visual:
         draw(start_time)
 
     return result
 
-# Recursive function for  the Quick Hull algorithm
+# Recursive function for  the Quickhull algorithm
 # that takes in the set of points to the right of the
 # line between P and Q.  Additionally, takes in the
 # index of the next point, the list of results, and
 # the start time of the timer.
-# Returns a list a list of arrays.
+# Returns a list.
 def find_hull(Sk, P, Q, index, result, start_time):
     if not Sk:
         return []
@@ -140,7 +174,7 @@ def find_hull(Sk, P, Q, index, result, start_time):
 
     S1 = []
     S2 = []
-    C = np.array([])
+    C = []
     dist_C = 0
     for point in Sk:
         dist_Point = utils.dist(P, Q, point)
