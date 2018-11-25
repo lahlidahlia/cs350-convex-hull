@@ -30,21 +30,25 @@ def draw(start_time):
 # Brute Force algorithm that takes in the array of
 # points and start time of the timer.
 # Returns the convex hull as a list.
+# The results of this algorithm are out-of-order,
+# unlike the other algorithms that have their results in-order.
 def brute_force(points, start_time):
     result = []
-    N = len(points)
-    print(points)
-    for i in range(N):
-        for j in range(N):
-            if (points[i] == points[j]).all():
+    convex_points = []
+    c_x = []
+    c_y = []
+    for i in points:
+        for j in points:
+            if (i == j).all():
                 continue
             side = 0
-            for k in range(N):
-                if (points[i] == points[k]).all() or \
-                   (points[j] == points[k]).all():
+            update = False
+            for k in points:
+                if (i == k).all() or \
+                   (j == k).all():
                     continue
-                ItoJ = np.subtract(points[j], points[i])
-                ItoK = np.subtract(points[i], points[k])
+                ItoJ = np.subtract(j, i)
+                ItoK = np.subtract(i, k)
                 newSide = np.cross(ItoJ, ItoK)
                 if newSide != 0:
                     if side == 0:
@@ -56,11 +60,28 @@ def brute_force(points, start_time):
                     else:
                         pass
             if side:
-                if points[i] not in points[:0]:
-                    result.append(points[i])
-                if points[j] not in points[:0]:
-                    result.append(points[j])
+                if list(i) not in result:
+                    result.append(list(i))
+                    if config.visual:
+                        update = True
+                        c_x.append(i[0])
+                        c_y.append(i[1])
+                if list(j) not in result:
+                    result.append(list(j))
+                    if config.visual:
+                        update = True
+                        c_x.append(j[0])
+                        c_y.append(j[1])
+                if config.visual and update:
+                    if convex_points:
+                        convex_points.remove()
+                    convex_points = plt.scatter(c_x, c_y,
+                        s=config.p_area, c=config.c_color,
+                        alpha=config.c_alpha, label=config.c_label)
+                    draw(start_time)
 
+    if config.visual:
+        convex_points.remove()
     return result
 
 # Gift Wrapping algorithm that takes in the array of

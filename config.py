@@ -9,7 +9,7 @@ run_quickhull      = False
 run_monotone_chain = True
 
 # Number of generated points
-N = 50
+N = 150
 # Delay between frames
 visual_delay = 0.05
 
