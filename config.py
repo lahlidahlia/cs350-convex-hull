@@ -3,9 +3,10 @@ Contains global variables.
 """
 
 # Whether or not to run each algorithm
-run_brute_force = False
-run_gift_wrap   = True
-run_quickhull   = True
+run_brute_force    = False
+run_gift_wrap      = True 
+run_quickhull      = False
+run_monotone_chain = True
 
 # Number of generated points
 N = 50

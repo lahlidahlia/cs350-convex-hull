@@ -4,12 +4,14 @@ import matplotlib.pyplot as plt
 import config
 from algorithms import *
 from sys import argv
+from pprint import pprint
 
 if __name__ == '__main__':
     points = np.random.rand(config.N, 2)
     bf_results = []
     gw_results = []
     qh_results = []
+    mc_results = []
     if '-v' in argv or '--visual' in argv:
         config.visual = True
 
@@ -52,6 +54,16 @@ if __name__ == '__main__':
 
         print("Solved in %.2f seconds\n" % end_time)
 
+    if config.run_monotone_chain:
+        print("Solving with Monotone Chain Algorithm")
+        if config.visual:
+            reset_plot('Monotone Chain')
+        start_time = time.time()
+        mc_results = monotone_chain(points, start_time)
+        end_time = time.time() - start_time
+
+        print("Solved in %.2f seconds\n" % end_time)
+
     # if config.run_brute_force and config.run_gift_wrap:
     #     print("Brute Force and Gift Wrapping comparision:")
     #     if (np.array(bf_results) == np.array(gw_results)).all():
@@ -66,12 +78,15 @@ if __name__ == '__main__':
     #     else:
     #         print("\tResults don't match!")
 
-    if config.run_gift_wrap and config.run_quickhull:
-        print("Gift Wrapping and Quickhull comparision:")
-        if gw_results == qh_results:
+    if config.run_gift_wrap and config.run_monotone_chain:
+        print("Gift Wrapping and Monotone Chain comparision:")
+        if gw_results == mc_results:
             print("\tResults match!")
         else:
             print("\tResults don't match!")
+            pprint(gw_results)
+            print("------------")
+            pprint(mc_results)
 
     if config.visual:
         plt.show()

@@ -3,6 +3,7 @@ import utils
 import config
 import numpy as np
 import matplotlib.pyplot as plt
+from pprint import pprint
 
 # The initialization function for the plot.
 def init_plot(points):
@@ -160,6 +161,10 @@ def quickhull(points, start_time):
 
     return result
 
+
+
+
+
 # Recursive function for  the Quickhull algorithm
 # that takes in the set of points to the right of the
 # line between P and Q.  Additionally, takes in the
@@ -215,3 +220,55 @@ def find_hull(Sk, P, Q, index, result, start_time):
     find_hull(S1, P, C, index, result, start_time)
     next_index = len(result) - orig_len + index + 1
     find_hull(S2, C, Q, next_index, result, start_time)
+
+
+def monotone_chain(points, start_time):
+    points = utils.sort_by_x(points)
+
+    upper = []
+    lower = []
+
+    next_guess = []
+
+    # Generates a label for guess lines.
+    plt.plot([0,0], [0,0], c=config.n_color, alpha=config.n_alpha,
+                           label=config.n_label)
+
+    for i in range(len(points)):
+        while (len(upper) >= 2 and 
+               utils.cross(upper[len(upper)-2], 
+                           upper[len(upper)-1], 
+                           points[i]) >= 0):
+            upper.pop()
+            if config.visual:
+                next_guess.pop().remove()
+        upper.append(points[i])
+        if config.visual and len(upper) > 0:
+            x, y = np.vstack((upper[len(upper)-2], points[i])).T
+            next_guess += (plt.plot(x, y, c=config.n_color, 
+                                       alpha=config.n_alpha))
+            draw(start_time)
+
+    for i in range(len(points)-1, -1, -1):
+        while (len(lower) >= 2 and 
+               utils.cross(lower[len(lower)-2], 
+                           lower[len(lower)-1], 
+                           points[i]) >= 0):
+            lower.pop()
+            if config.visual:
+                next_guess.pop().remove()
+        lower.append(points[i])
+        if config.visual and len(lower) > 0:
+            x, y = np.vstack((lower[len(lower)-2], points[i])).T
+            next_guess += (plt.plot(x, y, c=config.n_color, 
+                                       alpha=config.n_alpha))
+            draw(start_time)
+    pprint(upper + lower)
+    upper.pop()
+    lower.pop()
+    if config.visual:
+        x, y = np.array(upper + lower + [upper[0]]).T
+        plt.plot(x, y, c=config.c_color, alpha=config.c_alpha, 
+                 label=config.c_label)
+        draw(start_time)
+    return np.array(upper + lower).tolist()

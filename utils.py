@@ -30,3 +30,14 @@ def dist(P, Q, C):
 
     proj = (np.dot(A, B) / (magB*magB)) * B
     return np.linalg.norm(np.subtract(A, proj))
+
+
+# Sort the array by x coordinate, or by y coordinate in case of tie.
+# Returns a array of data points. (Does not modify the array)
+def sort_by_x(points):
+    indices = np.lexsort((points[:,1], points[:,0]))
+    return points[indices]
+    
+
+def cross(a, b, o):
+    return (a[0] - o[0]) * (b[1] - o[1]) - (a[1]  - o[1]) * (b[0] - o[0])
