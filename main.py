@@ -23,11 +23,11 @@ if __name__ == '__main__':
        
     if config.run_brute_force:
         print("Solving with Brute Force Algorithm")
+        print("(currently does not have visualization)")
         if config.visual:
             reset_plot('Brute Force')
         start_time = time.time()
         bf_results = brute_force(points, start_time)
-        print(bf_results)
         end_time = time.time() - start_time
 
         print("Solved in %.2f seconds\n" % end_time)
@@ -52,19 +52,21 @@ if __name__ == '__main__':
 
         print("Solved in %.2f seconds\n" % end_time)
 
-    # if config.run_brute_force and config.run_gift_wrap:
-    #     print("Brute Force and Gift Wrapping comparision:")
-    #     if (np.array(bf_results) == np.array(gw_results)).all():
-    #         print("\tResults match!")
-    #     else:
-    #         print("\tResults don't match!")
 
-    # if config.run_brute_force and config.run_quickhull:
-    #     print("Brute Force and Quickhull comparision:")
-    #     if (np.array(bf_results) == np.array(qh_results)).all():
-    #         print("\tResults match!")
-    #     else:
-    #         print("\tResults don't match!")
+    # We don't have to do the below comparisons
+    if config.run_brute_force and config.run_gift_wrap:
+        print("Brute Force and Gift Wrapping comparision:")
+        if all(i in bf_results for i in gw_results):
+            print("\tResults match!")
+        else:
+            print("\tResults don't match!")
+
+    if config.run_brute_force and config.run_quickhull:
+        print("Brute Force and Quickhull comparision:")
+        if all(i in bf_results for i in qh_results):
+            print("\tResults match!")
+        else:
+            print("\tResults don't match!")
 
     if config.run_gift_wrap and config.run_quickhull:
         print("Gift Wrapping and Quickhull comparision:")
