@@ -33,11 +33,15 @@ def draw(start_time):
 # unlike the other algorithms that have their results in-order.
 def brute_force(points, start_time):
     result = []
+    convex_points = []
+    c_x = []
+    c_y = []
     for i in points:
         for j in points:
             if (i == j).all():
                 continue
             side = 0
+            update = False
             for k in points:
                 if (i == k).all() or \
                    (j == k).all():
@@ -57,9 +61,26 @@ def brute_force(points, start_time):
             if side:
                 if list(i) not in result:
                     result.append(list(i))
+                    if config.visual:
+                        update = True
+                        c_x.append(i[0])
+                        c_y.append(i[1])
                 if list(j) not in result:
                     result.append(list(j))
+                    if config.visual:
+                        update = True
+                        c_x.append(j[0])
+                        c_y.append(j[1])
+                if config.visual and update:
+                    if convex_points:
+                        convex_points.remove()
+                    convex_points = plt.scatter(c_x, c_y,
+                        s=config.p_area, c=config.c_color,
+                        alpha=config.c_alpha, label=config.c_label)
+                    draw(start_time)
 
+    if config.visual:
+        convex_points.remove()
     return result
 
 # Gift Wrapping algorithm that takes in the array of

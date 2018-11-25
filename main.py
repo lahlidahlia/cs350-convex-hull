@@ -23,7 +23,6 @@ if __name__ == '__main__':
        
     if config.run_brute_force:
         print("Solving with Brute Force Algorithm")
-        print("(currently does not have visualization)")
         if config.visual:
             reset_plot('Brute Force')
         start_time = time.time()

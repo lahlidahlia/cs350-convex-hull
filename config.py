@@ -3,12 +3,12 @@ Contains global variables.
 """
 
 # Whether or not to run each algorithm
-run_brute_force = False
+run_brute_force = True
 run_gift_wrap   = True
 run_quickhull   = True
 
 # Number of generated points
-N = 50
+N = 150
 # Delay between frames
 visual_delay = 0.05
 
