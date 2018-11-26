@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sys import argv
 from pprint import pprint
 from algorithms import *
+import datagen as dg
 
 def run_algorithm(algorithm, points):
     algorithms = {
@@ -32,7 +33,8 @@ def run_algorithm(algorithm, points):
 
 if __name__ == '__main__':
     # The input dataset
-    points = np.random.rand(10, 2)
+    #points = dg.gen_random_data(10)
+    points = dg.gen_us_cities_data()
 
     # The end times for each algorithm
     bf_time = 0

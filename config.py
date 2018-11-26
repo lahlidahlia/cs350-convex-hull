@@ -5,17 +5,17 @@ Contains global variables.
 dataset = 'frames'
 
 # Whether or not to run each algorithm
-run_brute_force    = True
-run_gift_wrap      = True
+run_brute_force    = False
+run_gift_wrap      = False
 run_quickhull      = True
-run_monotone_chain = True
+run_monotone_chain = False
 
 # Delay between frames
 visual_delay = 0.05
 
 # Properties of the points
 p_color = 'r'
-p_area  = 20
+p_area  = 5
 p_alpha = 0.5
 
 # Properties of the convex lines
