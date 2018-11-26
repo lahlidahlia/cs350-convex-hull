@@ -24,6 +24,10 @@ def run_algorithm(algorithm, points):
     pprint(results)
     print("Solved in %.2f seconds\n" % end_time)
 
+    with open('results.csv', 'a') as results_file:
+        results_file.write("%s,%s,%s\n" %
+                (config.dataset, algorithm, str(end_time)))
+
     return end_time
 
 if __name__ == '__main__':

@@ -60,7 +60,7 @@ def brute_force(points, start_time):
                     draw(start_time)
 
     if config.visual:
-        plt.savefig(config.folder + '/Brute Force.png')
+        plt.savefig(config.dataset + '/Brute Force.png')
         convex_points.remove()
     return result
 
@@ -124,7 +124,7 @@ def gift_wrap(points, start_time):
             break
     
     if config.visual:
-        plt.savefig(config.folder + '/Gift Wrapping.png')
+        plt.savefig(config.dataset + '/Gift Wrapping.png')
         next_guess.pop(0).remove()
         draw(start_time)
     return result
@@ -159,7 +159,7 @@ def quickhull(points, start_time):
     find_hull(S1, result[0],  result[1], 1,           result, start_time)
     find_hull(S2, result[-1], result[0], len(result), result, start_time)
     if config.visual:
-        plt.savefig(config.folder + '/Quickhull.png')
+        plt.savefig(config.dataset + '/Quickhull.png')
         draw(start_time)
 
     return result
@@ -269,6 +269,6 @@ def monotone_chain(points, start_time):
         x, y = np.array(upper + lower + [upper[0]]).T
         plt.plot(x, y, c=config.c_color, alpha=config.c_alpha, 
                  label=config.c_label)
-        plt.savefig(config.folder + '/Monotone Chain.png')
+        plt.savefig(config.dataset + '/Monotone Chain.png')
         draw(start_time)
     return np.array(upper + lower).tolist()

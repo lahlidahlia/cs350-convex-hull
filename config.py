@@ -1,8 +1,8 @@
 """
 Contains global variables.
 """
-# The name of the folder to store the images
-folder = 'frames'
+# The name of the current dataset
+dataset = 'frames'
 
 # Whether or not to run each algorithm
 run_brute_force    = True
