@@ -1,31 +1,9 @@
-import time
 import utils
 import config
 import numpy as np
 import matplotlib.pyplot as plt
+from draw import *
 from pprint import pprint
-
-# The initialization function for the plot.
-def init_plot(points):
-    if points.size == 0:
-        return
-    x, y = points.T
-    plt.scatter(x, y, s=config.p_area, c=config.p_color,
-            alpha=config.p_alpha)
-
-# The function to reset the plot.
-def reset_plot(title):
-    if config.lines:
-        config.lines.pop(0).remove()
-    config.timer.set_text("0.0 sec")
-    plt.title(title)
-
-# Plots connected lines based on the provided points.
-# Displays a timer based on the provided start time.
-def draw(start_time):
-    plt.legend(loc=2)
-    config.timer.set_text("%.2f sec" % (time.time() - start_time))
-    plt.pause(config.visual_delay)
 
 # Brute Force algorithm that takes in the array of
 # points and start time of the timer.
@@ -44,8 +22,7 @@ def brute_force(points, start_time):
             side = 0
             update = False
             for k in points:
-                if (i == k).all() or \
-                   (j == k).all():
+                if (i == k).all() or (j == k).all():
                     continue
                 ItoJ = np.subtract(j, i)
                 ItoK = np.subtract(i, k)
@@ -60,14 +37,16 @@ def brute_force(points, start_time):
                     else:
                         pass
             if side:
-                if list(i) not in result:
-                    result.append(list(i))
+                i = list(i)
+                j = list(j)
+                if i not in result:
+                    result.append(i)
                     if config.visual:
                         update = True
                         c_x.append(i[0])
                         c_y.append(i[1])
-                if list(j) not in result:
-                    result.append(list(j))
+                if j not in result:
+                    result.append(j)
                     if config.visual:
                         update = True
                         c_x.append(j[0])
@@ -81,6 +60,7 @@ def brute_force(points, start_time):
                     draw(start_time)
 
     if config.visual:
+        plt.savefig(config.folder + '/Brute Force.png')
         convex_points.remove()
     return result
 
@@ -144,6 +124,7 @@ def gift_wrap(points, start_time):
             break
     
     if config.visual:
+        plt.savefig(config.folder + '/Gift Wrapping.png')
         next_guess.pop(0).remove()
         draw(start_time)
     return result
@@ -178,13 +159,10 @@ def quickhull(points, start_time):
     find_hull(S1, result[0],  result[1], 1,           result, start_time)
     find_hull(S2, result[-1], result[0], len(result), result, start_time)
     if config.visual:
+        plt.savefig(config.folder + '/Quickhull.png')
         draw(start_time)
 
     return result
-
-
-
-
 
 # Recursive function for  the Quickhull algorithm
 # that takes in the set of points to the right of the
@@ -284,12 +262,13 @@ def monotone_chain(points, start_time):
             next_guess += (plt.plot(x, y, c=config.n_color, 
                                        alpha=config.n_alpha))
             draw(start_time)
-    pprint(upper + lower)
+    # pprint(upper + lower)
     upper.pop()
     lower.pop()
     if config.visual:
         x, y = np.array(upper + lower + [upper[0]]).T
         plt.plot(x, y, c=config.c_color, alpha=config.c_alpha, 
                  label=config.c_label)
+        plt.savefig(config.folder + '/Monotone Chain.png')
         draw(start_time)
     return np.array(upper + lower).tolist()

@@ -1,15 +1,15 @@
 """
 Contains global variables.
 """
+# The name of the folder to store the images
+folder = 'frames'
 
 # Whether or not to run each algorithm
-run_brute_force    = False
-run_gift_wrap      = True 
-run_quickhull      = False
+run_brute_force    = True
+run_gift_wrap      = True
+run_quickhull      = True
 run_monotone_chain = True
 
-# Number of generated points
-N = 150
 # Delay between frames
 visual_delay = 0.05
 
