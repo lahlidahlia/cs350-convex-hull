@@ -15,7 +15,7 @@ visual_delay = 0.05
 
 # Properties of the points
 p_color = 'r'
-p_area  = 5
+p_area  = 1
 p_alpha = 0.5
 
 # Properties of the convex lines

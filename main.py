@@ -34,7 +34,11 @@ def run_algorithm(algorithm, points):
 if __name__ == '__main__':
     # The input dataset
     #points = dg.gen_random_data(10)
-    points = dg.gen_us_cities_data()
+    #points = dg.gen_us_cities_data()
+    #points = dg.gen_circle(1000)
+    #points = dg.gen_triangle(1000)
+    points = dg.gen_dense_center(10000)
+
 
     # The end times for each algorithm
     bf_time = 0
