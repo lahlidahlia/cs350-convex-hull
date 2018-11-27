@@ -1,70 +1,106 @@
 import time
 import config
-import numpy as np
+import datagen as dg
 import matplotlib.pyplot as plt
 from sys import argv
 from pprint import pprint
-from algorithms import *
-import datagen as dg
 
-def run_algorithm(algorithm, points):
-    algorithms = {
-        'Brute Force':    brute_force,
-        'Gift Wrapping':  gift_wrap,
-        'Quickhull':      quickhull,
-        'Monotone Chain': monotone_chain
-    }
-    function = algorithms.get(algorithm)
+def run_dataset(dataset, function, sizes):
+    with open(config.timings_file + '.csv', 'a') as results_file:
+        results_file.write("%s" % dataset)
 
-    print("Solving with " + algorithm + " Algorithm")
-    if config.visual:
-        reset_plot(algorithm)
-    start_time = time.time()
-    results = function(points, start_time)
-    end_time = time.time() - start_time
-    pprint(results)
-    print("Solved in %.2f seconds\n" % end_time)
+    plot = None # Scatter plot
+    for size, algos in sizes:
+        points = function(size)
+        if config.visual:
+            # config.p_area = size somethin'..
+            x, y = points.T
+            plot = config.ax.scatter(x, y, s=config.p_area, c=config.p_color,
+                    alpha=config.p_alpha)
+        run_algorithms(dataset, algos, size, points)
+        if config.visual:
+            plot.remove()
 
-    with open('results.csv', 'a') as results_file:
-        results_file.write("%s,%s,%s\n" %
-                (config.dataset, algorithm, str(end_time)))
+def run_algorithms(dataset_name, algos, input_size, points):
+    with open(config.timings_file + '.csv', 'a') as results_file:
+        results_file.write(",%u," % input_size)
 
-    return end_time
+    first = True
+    for algo in algos:
+        algo_name, function = config.algorithms.get(algo)
+        config.image_path = 'frames/%s_%s_%s.png' \
+                % (dataset_name, algo_name, str(input_size))
+
+        print("Solving with " + algo_name + " Algorithm")
+        if config.visual:
+            if config.lines:
+                config.lines.pop(0).remove()
+            config.timer.set_text("0.00 sec")
+            config.ax.set_title("Dataset: %s\nAlgorithm: %s\nData Size:%u" %
+                    (dataset_name, algo_name, input_size))
+        start_time = time.time()
+        results = function(points, start_time)
+        end_time = time.time() - start_time
+        pprint(results)
+        print("Solved in %.2f seconds\n" % end_time)
+
+        output_size = len(results)
+        if not first:
+            with open(config.timings_file + '.csv', 'a') as results_file:
+                results_file.write(",,")
+        else:
+            first = False
+
+        with open('results.csv', 'a') as results_file:
+            results_file.write("%u,%s,%f\n"
+                    % (output_size, algo_name, end_time*1000))
 
 if __name__ == '__main__':
-    # The input dataset
-    #points = dg.gen_random_data(10)
-    #points = dg.gen_us_cities_data()
-    #points = dg.gen_circle(1000)
-    #points = dg.gen_triangle(1000)
-    points = dg.gen_dense_center(10000)
-
-
-    # The end times for each algorithm
-    bf_time = 0
-    gw_time = 0
-    qh_time = 0
-    mc_time = 0
-
     if '-v' in argv or '--visual' in argv:
+        # Initialize the visualization
         print("Running with visual mode\n")
-        plt.xlabel('X')
-        plt.ylabel('Y')
+        fig = plt.figure()
+        config.ax = fig.add_subplot(111)
+        config.ax.set_xlabel('X')
+        config.ax.set_ylabel('Y')
         config.visual = True
-        config.timer = plt.text(0.9, 1, "")
-        init_plot(points)
+        config.timer = config.ax.text(0.9, 0.95, "", ha='center', va='center',
+                transform = config.ax.transAxes)
+   
+    # Write the first row of the CSV file with titles
+    with open(config.timings_file + '.csv', 'w') as results_file:
+        results_file.write('Dataset,Input Size,Output Size,Algorithm,'
+        + 'Timing (ms),Worst case number of operations,Operations/ms\n')
 
-    if config.run_brute_force:
-        bf_time = run_algorithm('Brute Force', points)
-
-    if config.run_gift_wrap:
-        gw_time = run_algorithm('Gift Wrapping', points)
-
-    if config.run_quickhull:
-        qh_time = run_algorithm('Quickhull', points)
-
-    if config.run_monotone_chain:
-        mc_time = run_algorithm('Monotone Chain', points)
-
+    # Run the following datasets:
+    # Each dataset has a list of sizes with
+    # corresponding algorithms to run on each size.
+    run_dataset('US Cities', dg.gen_us_cities_data, [
+        [35666, 'Q']
+    ])
+    if config.visual:
+        config.ax.set_xlim([-0.1, 1.1])
+        config.ax.set_ylim([-0.1, 1.1])
+    run_dataset('Random', dg.gen_random_data, [
+        [10,    'BGQ'],
+        [100,   'Q'],
+        [1000,  'Q'],
+        [10000, 'Q']
+    ])
+    # run_dataset('Dense Center', dg.gen_dense_center, [
+    #     [10,  'G'],
+    #     [100, 'G']
+    # ])
+    # run_dataset('Triangle', dg.gen_triangle, [
+    #     [10,  'BGQ'],
+    #     [100, 'Q']
+    # ])
+    # if config.visual:
+    #     config.ax.set_xlim([-1.1, 1.1])
+    #     config.ax.set_ylim([-1.1, 1.1])
+    # run_dataset('Circle', dg.gen_circle, [
+    #     [10,  'GQ'],
+    #     [100, 'G']
+    # ])
     if config.visual:
         plt.show()

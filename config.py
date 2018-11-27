@@ -1,17 +1,22 @@
 """
 Contains global variables.
 """
-# The name of the current dataset
-dataset = 'frames'
+from algorithms import *
 
-# Whether or not to run each algorithm
-run_brute_force    = False
-run_gift_wrap      = False
-run_quickhull      = True
-run_monotone_chain = False
+# The dictionary of algorithms, each algorithm has a name and a function.
+algorithms = {
+    'B': ('Brute Force',    brute_force),
+    'G': ('Gift Wrapping',  gift_wrap),
+    'Q': ('Quickhull',      quickhull),
+    'M': ('Monotone Chain', monotone_chain)
+}
 
+# The path to the image of the final frame
+image_path = ''
+# The name of the timings file
+timings_file = 'results'
 # Delay between frames
-visual_delay = 0.05
+visual_delay = 0.0001
 
 # Properties of the points
 p_color = 'r'
@@ -31,5 +36,6 @@ n_label = 'Next Best'
 # Visual components
 lines  = []
 timer  = None
+ax = None
 # Whether or not to visualize
 visual = False

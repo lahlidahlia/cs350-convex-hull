@@ -2,15 +2,17 @@ import utils
 import config
 import numpy as np
 import matplotlib.pyplot as plt
-from draw import *
+from draw import draw
 from pprint import pprint
 
-# Brute Force algorithm that takes in the array of
-# points and start time of the timer.
-# Returns the convex hull as a list.
-# The results of this algorithm are out-of-order,
-# unlike the other algorithms that have their results in-order.
 def brute_force(points, start_time):
+    '''
+    Brute Force algorithm that takes in the array of
+    points and start time of the timer.
+    Returns the convex hull as a list.
+    The results of this algorithm are out-of-order,
+    unlike the other algorithms that have their results in-order.
+    '''
     result = []
     convex_points = []
     c_x = []
@@ -54,20 +56,22 @@ def brute_force(points, start_time):
                 if config.visual and update:
                     if convex_points:
                         convex_points.remove()
-                    convex_points = plt.scatter(c_x, c_y,
-                        s=config.p_area, c=config.c_color,
-                        alpha=config.c_alpha, label=config.c_label)
+                    convex_points = config.ax.scatter(c_x, c_y,
+                            s=config.p_area, c=config.c_color,
+                            alpha=config.c_alpha, label=config.c_label)
                     draw(start_time)
 
     if config.visual:
-        plt.savefig(config.dataset + '/Brute Force.png')
+        plt.savefig(config.image_path)
         convex_points.remove()
     return result
 
-# Gift Wrapping algorithm that takes in the array of
-# points and start time of the timer.
-# Returns the convex hull as a list.
 def gift_wrap(points, start_time):
+    '''
+    Gift Wrapping algorithm that takes in the array of
+    points and start time of the timer.
+    Returns the convex hull as a list.
+    '''
     if points.size == 0:
         return []
 
@@ -90,7 +94,7 @@ def gift_wrap(points, start_time):
             x, y = np.vstack((endPoint,  result[i])).T
             if next_guess:
                 next_guess.pop(0).remove()
-            next_guess = plt.plot(x, y, c=config.n_color,
+            next_guess = config.ax.plot(x, y, c=config.n_color,
                     alpha=config.n_alpha, label=config.n_label)
             draw(start_time)
         for j in range(1, N):
@@ -102,7 +106,7 @@ def gift_wrap(points, start_time):
                 if config.visual:
                     x, y = np.vstack((endPoint,  result[i])).T
                     next_guess.pop(0).remove()
-                    next_guess = plt.plot(x, y, c=config.n_color,
+                    next_guess = config.ax.plot(x, y, c=config.n_color,
                             alpha=config.n_alpha, label=config.n_label)
                     draw(start_time)
 
@@ -114,7 +118,7 @@ def gift_wrap(points, start_time):
             c_x.append(endPoint[0])
             c_y.append(endPoint[1])
 
-            config.lines = plt.plot(c_x, c_y, c=config.c_color,
+            config.lines = config.ax.plot(c_x, c_y, c=config.c_color,
                     alpha=config.c_alpha, label=config.c_label)
 
         i += 1
@@ -124,15 +128,17 @@ def gift_wrap(points, start_time):
             break
     
     if config.visual:
-        plt.savefig(config.dataset + '/Gift Wrapping.png')
+        plt.savefig(config.image_path)
         next_guess.pop(0).remove()
         draw(start_time)
     return result
 
-# Quickhll algorithm that takes in the array of
-# points, and the start time of the timer.
-# Returns the convex hull as a list.
 def quickhull(points, start_time):
+    '''
+    Quickhll algorithm that takes in the array of
+    points, and the start time of the timer.
+    Returns the convex hull as a list.
+    '''
     if points.size == 0:
         return []
 
@@ -143,8 +149,8 @@ def quickhull(points, start_time):
 
     if config.visual:
         x, y = np.vstack((A, B)).T
-        config.lines = plt.plot(x, y, c=config.c_color, alpha=config.c_alpha,
-                label=config.c_label)
+        config.lines = config.ax.plot(x, y, c=config.c_color,
+                alpha=config.c_alpha, label=config.c_label)
     S1 = []
     S2 = []
     N = len(points)
@@ -159,18 +165,20 @@ def quickhull(points, start_time):
     find_hull(S1, result[0],  result[1], 1,           result, start_time)
     find_hull(S2, result[-1], result[0], len(result), result, start_time)
     if config.visual:
-        plt.savefig(config.dataset + '/Quickhull.png')
+        plt.savefig(config.image_path)
         draw(start_time)
 
     return result
 
-# Recursive function for  the Quickhull algorithm
-# that takes in the set of points to the right of the
-# line between P and Q.  Additionally, takes in the
-# index of the next point, the list of results, and
-# the start time of the timer.
-# Returns a list.
 def find_hull(Sk, P, Q, index, result, start_time):
+    '''
+    Recursive function for  the Quickhull algorithm
+    that takes in the set of points to the right of the
+    line between P and Q.  Additionally, takes in the
+    index of the next point, the list of results, and
+    the start time of the timer.
+    Returns a list.
+    '''
     if not Sk:
         return []
 
@@ -192,7 +200,7 @@ def find_hull(Sk, P, Q, index, result, start_time):
                 else:
                     x, y = np.vstack((result[index - 1], point,
                             result[index])).T
-                next_guess = plt.plot(x, y, c=config.n_color,
+                next_guess = config.ax.plot(x, y, c=config.n_color,
                         alpha=config.n_alpha, label=config.n_label)
                 draw(start_time)
             C = point
@@ -203,7 +211,7 @@ def find_hull(Sk, P, Q, index, result, start_time):
         next_guess.pop(0).remove()
         config.lines.pop(0).remove()
         x, y = np.vstack((result, result[0])).T
-        config.lines = plt.plot(x, y, c=config.c_color,
+        config.lines = config.ax.plot(x, y, c=config.c_color,
                 alpha=config.c_alpha, label=config.c_label)
 
     PtoC = np.subtract(P, C)
@@ -230,8 +238,9 @@ def monotone_chain(points, start_time):
     next_guess = []
 
     # Generates a label for guess lines.
-    plt.plot([0,0], [0,0], c=config.n_color, alpha=config.n_alpha,
-                           label=config.n_label)
+    if config.visual:
+        next_guess += config.ax.plot([0,0], [0,0], c=config.n_color,
+                alpha=config.n_alpha, label=config.n_label)
 
     for i in range(len(points)):
         while (len(upper) >= 2 and 
@@ -244,7 +253,7 @@ def monotone_chain(points, start_time):
         upper.append(points[i])
         if config.visual and len(upper) > 0:
             x, y = np.vstack((upper[len(upper)-2], points[i])).T
-            next_guess += (plt.plot(x, y, c=config.n_color, 
+            next_guess += (config.ax.plot(x, y, c=config.n_color, 
                                        alpha=config.n_alpha))
             draw(start_time)
 
@@ -259,16 +268,18 @@ def monotone_chain(points, start_time):
         lower.append(points[i])
         if config.visual and len(lower) > 0:
             x, y = np.vstack((lower[len(lower)-2], points[i])).T
-            next_guess += (plt.plot(x, y, c=config.n_color, 
+            next_guess += (confg.ax.plot(x, y, c=config.n_color, 
                                        alpha=config.n_alpha))
             draw(start_time)
     # pprint(upper + lower)
     upper.pop()
     lower.pop()
     if config.visual:
+        while next_guess:
+            next_guess.pop().remove()
         x, y = np.array(upper + lower + [upper[0]]).T
-        plt.plot(x, y, c=config.c_color, alpha=config.c_alpha, 
-                 label=config.c_label)
-        plt.savefig(config.dataset + '/Monotone Chain.png')
+        config.lines = config.ax.plot(x, y, c=config.c_color,
+                alpha=config.c_alpha, label=config.c_label)
         draw(start_time)
+        plt.savefig(config.image_path)
     return np.array(upper + lower).tolist()

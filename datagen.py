@@ -1,13 +1,13 @@
-import numpy as np
-import json
 import math
+import json
 import random
+import numpy as np
 
 def gen_random_data(amount):
     # Generate data points with random coordinates.
     return np.random.rand(amount, 2)
 
-def gen_us_cities_data():
+def gen_us_cities_data(amount):
     data = None
     with open('us_cities.json') as f:
         data = json.load(f)
