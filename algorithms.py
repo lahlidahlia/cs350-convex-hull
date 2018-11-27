@@ -244,9 +244,8 @@ def monotone_chain(points, start_time):
 
     for i in range(len(points)):
         while (len(upper) >= 2 and 
-               utils.cross(upper[len(upper)-2], 
-                           upper[len(upper)-1], 
-                           points[i]) >= 0):
+               np.cross(upper[len(upper)-1] - upper[len(upper)-2], 
+                        points[i] - upper[len(upper)-1]) >= 0):
             upper.pop()
             if config.visual:
                 next_guess.pop().remove()
@@ -259,16 +258,15 @@ def monotone_chain(points, start_time):
 
     for i in range(len(points)-1, -1, -1):
         while (len(lower) >= 2 and 
-               utils.cross(lower[len(lower)-2], 
-                           lower[len(lower)-1], 
-                           points[i]) >= 0):
+               np.cross(lower[len(lower)-1] - lower[len(lower)-2], 
+                        points[i] - lower[len(lower)-1]) >= 0): 
             lower.pop()
             if config.visual:
                 next_guess.pop().remove()
         lower.append(points[i])
         if config.visual and len(lower) > 0:
             x, y = np.vstack((lower[len(lower)-2], points[i])).T
-            next_guess += (confg.ax.plot(x, y, c=config.n_color, 
+            next_guess += (config.ax.plot(x, y, c=config.n_color, 
                                        alpha=config.n_alpha))
             draw(start_time)
     # pprint(upper + lower)

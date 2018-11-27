@@ -19,7 +19,8 @@ def run_dataset(dataset, function, sizes):
                     alpha=config.p_alpha)
         run_algorithms(dataset, algos, size, points)
         if config.visual:
-            plot.remove()
+            #plot.remove()
+            pass
 
 def run_algorithms(dataset_name, algos, input_size, points):
     with open(config.timings_file + '.csv', 'a') as results_file:
@@ -75,32 +76,32 @@ if __name__ == '__main__':
     # Run the following datasets:
     # Each dataset has a list of sizes with
     # corresponding algorithms to run on each size.
-    run_dataset('US Cities', dg.gen_us_cities_data, [
-        [35666, 'Q']
-    ])
+    #run_dataset('US Cities', dg.gen_us_cities_data, [
+    #    [35666, 'Q']
+    #])
     if config.visual:
         config.ax.set_xlim([-0.1, 1.1])
         config.ax.set_ylim([-0.1, 1.1])
     run_dataset('Random', dg.gen_random_data, [
-        [10,    'BGQ'],
-        [100,   'Q'],
-        [1000,  'Q'],
-        [10000, 'Q']
+        #[10,    'BGQ'],
+        [100,   'M'],
+        #[1000,  'M'],
+        #[10000, 'Q']
     ])
-    # run_dataset('Dense Center', dg.gen_dense_center, [
-    #     [10,  'G'],
-    #     [100, 'G']
-    # ])
-    # run_dataset('Triangle', dg.gen_triangle, [
-    #     [10,  'BGQ'],
-    #     [100, 'Q']
-    # ])
-    # if config.visual:
-    #     config.ax.set_xlim([-1.1, 1.1])
-    #     config.ax.set_ylim([-1.1, 1.1])
-    # run_dataset('Circle', dg.gen_circle, [
-    #     [10,  'GQ'],
-    #     [100, 'G']
-    # ])
+    #run_dataset('Dense Center', dg.gen_dense_center, [
+    #    [10,  'G'],
+    #    [100, 'G']
+    #])
+    #run_dataset('Triangle', dg.gen_triangle, [
+    #    [10,  'BGQ'],
+    #    [100, 'Q']
+    #])
+    #if config.visual:
+    #    config.ax.set_xlim([-1.1, 1.1])
+    #    config.ax.set_ylim([-1.1, 1.1])
+    #run_dataset('Circle', dg.gen_circle, [
+    #    [10,  'GQ'],
+    #    [100, 'G']
+    #])
     if config.visual:
         plt.show()
