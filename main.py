@@ -16,6 +16,7 @@ def run_dataset(dataset, function, sizes):
     if not config.visual:
         with open(config.timings_file + '.csv', 'a') as results_file:
             results_file.write("%s" % dataset)
+        print('Benchmarking results for %s:' % dataset)
 
     plot = None # Scatter plot
     for size, algos in sizes:
@@ -31,18 +32,29 @@ def run_dataset(dataset, function, sizes):
             with open(config.timings_file + '.csv', 'a') as results_file:
                 results_file.write(",%u," % size)
             times = {a: [] for a in algos}
-            for i in range(10): # How many times to run each dataset
+            for i in range(25): # How many times to run each dataset
                 points = function(size)
                 timings = run_algorithms(dataset, algos, size, points)
                 for name, time in timings.items():
                     times[name].append(time)
 
+            first = True
+            print('\nNumber of points: %u' % size)
             for algo, l_time in times.items():
+                l_time = l_time[5:] # Removes first 5 timings
+                l_time.sort()
+                l_time = l_time[6:15] # Grabs median 10 timings
+
                 name, fun = config.algorithms.get(algo)
-                print('ALGO:\t'    + name)
-                print('MEDIAN:\t', statistics.median(l_time))
-                print('MEAN:\t',   statistics.mean(l_time))
-                print('STDEV:\t',  statistics.stdev(l_time))
+                print('\nAlgo:\t'  + name)
+                print('Median:\t', statistics.median(l_time))
+                print('Mean:\t',   statistics.mean(l_time))
+                print('Stdev:\t',  statistics.stdev(l_time))
+                if not first:
+                    with open('results.csv', 'a') as results_file:
+                        results_file.write(",,")
+                else:
+                    first = False
                 with open('results.csv', 'a') as results_file:
                     results_file.write("%s,%s\n"
                             % (name,statistics.mean(l_time)))
@@ -60,7 +72,6 @@ def run_algorithms(dataset, algos, input_size, points):
         config.image_path = 'frames/%s_%s_%s.png' \
                 % (dataset, algo_name, str(input_size))
 
-        print("Solving with " + algo_name + " Algorithm")
         if config.visual:
             if config.lines:
                 config.lines.pop(0).remove()
@@ -72,9 +83,6 @@ def run_algorithms(dataset, algos, input_size, points):
         results = function(points, start_time)
         end_time = time.time() - start_time
         times[algo] = end_time * 1000 # Sec to mSec
-
-        pprint(results)
-        print("Solved in %.2f seconds\n" % end_time)
 
         # Compare the results to SciPy's
         scipy_results = points[ConvexHull(points).vertices].tolist()
@@ -104,20 +112,19 @@ if __name__ == '__main__':
     # Each dataset has a list of sizes with
     # corresponding algorithms to run on each size.
     #run_dataset('US Cities', dg.gen_us_cities_data, [
-    #    [35666, 'Q']
+    #    [35666, 'QM']
     #])
-    if config.visual:
-        config.ax.set_xlim([-0.1, 1.1])
-        config.ax.set_ylim([-0.1, 1.1])
+    #if config.visual:
+    #    config.ax.set_xlim([-0.1, 1.1])
+    #    config.ax.set_ylim([-0.1, 1.1])
     run_dataset('Random', dg.gen_random_data, [
-        [10,    'BGQ'],
-        #[100,   'QM'],
-        #[1000,  'M'],
-        #[10000, 'Q']
+        [10,    'BGQM'],
+        [100,   'GQM'],
+        [1000,  'QM']
     ])
     #run_dataset('Dense Center', dg.gen_dense_center, [
-    #    [10,  'G'],
-    #    [100, 'G']
+    #    [10,  'BGQM'],
+    #    [100, 'GQM']
     #])
     #run_dataset('Triangle', dg.gen_triangle, [
     #    [10,  'BGQ'],
@@ -130,5 +137,3 @@ if __name__ == '__main__':
     #    [10,  'GQ'],
     #    [100, 'G']
     #])
-    if config.visual:
-        plt.show()
