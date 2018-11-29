@@ -85,7 +85,7 @@ def run_algorithms(dataset, algos, input_size, points):
         times[algo] = end_time * 1000 # Sec to mSec
 
         # Compare the results to SciPy's
-        scipy_results = points[ConvexHull(points).vertices].tolist()
+        scipy_results = points[ConvexHull(points).vertices]
         assert all(i in results for i in scipy_results)
 
     return times

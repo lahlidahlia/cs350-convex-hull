@@ -2,27 +2,27 @@ import numpy as np
 
 def left_most_point(points):
     '''
-    Takes in the list of points, and returns the point
+    Takes in the array of points, and returns the point
     furthest on the left side.
     '''
-    leftMost = []
+    leftMost = np.array([])
     for point in points:
-        if not leftMost or point[0] < leftMost[0]:
-            leftMost = list(point)
+        if leftMost.size == 0 or point[0] < leftMost[0]:
+            leftMost = point
     return leftMost
 
 def lr_most_point(points):
     '''
-    Takes in the list of points, and returns the points
+    Takes in the array of points, and returns the points
     furthest on the left and right sides as a tuple.
     '''
-    leftMost  = []
-    rightMost = []
+    leftMost  = np.array([])
+    rightMost = np.array([])
     for point in points:
-        if not leftMost or point[0] < leftMost[0]:
-            leftMost = list(point)
-        if not rightMost or point[0] > rightMost[0]:
-            rightMost = list(point)
+        if leftMost.size == 0 or point[0] < leftMost[0]:
+            leftMost = point
+        if rightMost.size == 0 or point[0] > rightMost[0]:
+            rightMost = point
     return (leftMost, rightMost)
 
 def dist(P, Q, C):

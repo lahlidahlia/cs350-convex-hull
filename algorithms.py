@@ -9,7 +9,7 @@ def brute_force(points, start_time):
     '''
     Brute Force algorithm that takes in the array of
     points and start time of the timer.
-    Returns the convex hull as a list.
+    Returns the convex hull as an array.
     The results of this algorithm are out-of-order,
     unlike the other algorithms that have their results in-order.
     '''
@@ -36,18 +36,14 @@ def brute_force(points, start_time):
                          (side > 0 and newSide < 0):
                         side = False
                         break
-                    else:
-                        pass
             if side:
-                i = list(i)
-                j = list(j)
-                if i not in result:
+                if all(i not in q for q in result):
                     result.append(i)
                     if config.visual:
                         update = True
                         c_x.append(i[0])
                         c_y.append(i[1])
-                if j not in result:
+                if all(j not in q for q in result):
                     result.append(j)
                     if config.visual:
                         update = True
@@ -64,13 +60,13 @@ def brute_force(points, start_time):
     if config.visual:
         plt.savefig(config.image_path)
         convex_points.remove()
-    return result
+    return np.array(result)
 
 def gift_wrap(points, start_time):
     '''
     Gift Wrapping algorithm that takes in the array of
     points and start time of the timer.
-    Returns the convex hull as a list.
+    Returns the convex hull as an array.
     '''
     if points.size == 0:
         return []
@@ -83,11 +79,11 @@ def gift_wrap(points, start_time):
     c_y = [pointOnHull[1]]
 
     N = len(points)
-    endPoint = []
+    endPoint = np.array([])
     i = 0
     while True:
         result.append(pointOnHull)
-        endPoint = list(points[0])
+        endPoint = points[0]
         oldLine = np.subtract(endPoint,  result[i])
 
         if config.visual:
@@ -100,8 +96,9 @@ def gift_wrap(points, start_time):
         for j in range(1, N):
             newLine = np.subtract(points[j], result[i])
            
-            if endPoint == pointOnHull or np.cross(newLine, oldLine) < 0:
-                endPoint = list(points[j])
+            if (endPoint == pointOnHull).all() \
+                    or np.cross(newLine, oldLine) < 0:
+                endPoint = points[j]
                 oldLine = np.subtract(endPoint,  result[i])
                 if config.visual:
                     x, y = np.vstack((endPoint,  result[i])).T
@@ -124,20 +121,20 @@ def gift_wrap(points, start_time):
         i += 1
         pointOnHull = endPoint
 
-        if endPoint == list(result[0]):
+        if (endPoint == result[0]).all():
             break
     
     if config.visual:
-        plt.savefig(config.image_path)
         next_guess.pop(0).remove()
         draw(start_time)
-    return result
+        plt.savefig(config.image_path)
+    return np.array(result)
 
 def quickhull(points, start_time):
     '''
     Quickhll algorithm that takes in the array of
     points, and the start time of the timer.
-    Returns the convex hull as a list.
+    Returns the convex hull as an array.
     '''
     if points.size == 0:
         return []
@@ -158,17 +155,18 @@ def quickhull(points, start_time):
     for i in range(N):
         newLine = np.subtract(result[0], points[i])
         if np.cross(oldLine, newLine) > 0:
-            S1.append(list(points[i]))
-        elif list(points[i]) != result[0] and list(points[i]) != result[1]:
-            S2.append(list(points[i]))
+            S1.append(points[i])
+        elif (points[i] != result[0]).all() \
+                and (points[i] != result[1]).all():
+            S2.append(points[i])
 
     find_hull(S1, result[0],  result[1], 1,           result, start_time)
     find_hull(S2, result[-1], result[0], len(result), result, start_time)
     if config.visual:
-        plt.savefig(config.image_path)
         draw(start_time)
+        plt.savefig(config.image_path)
 
-    return result
+    return np.array(result)
 
 def find_hull(Sk, P, Q, index, result, start_time):
     '''
@@ -177,7 +175,7 @@ def find_hull(Sk, P, Q, index, result, start_time):
     line between P and Q.  Additionally, takes in the
     index of the next point, the list of results, and
     the start time of the timer.
-    Returns a list.
+    Returns an array.
     '''
     if not Sk:
         return []
@@ -280,4 +278,4 @@ def monotone_chain(points, start_time):
                 alpha=config.c_alpha, label=config.c_label)
         draw(start_time)
         plt.savefig(config.image_path)
-    return np.array(upper + lower).tolist()
+    return np.array(upper + lower)
