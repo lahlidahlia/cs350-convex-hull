@@ -112,16 +112,19 @@ if __name__ == '__main__':
     # Each dataset has a list of sizes with
     # corresponding algorithms to run on each size.
     #run_dataset('US Cities', dg.gen_us_cities_data, [
-    #    [35666, 'QM']
+    #    [35666, 'GQM']
     #])
+    run_dataset('Major US Cities', dg.gen_major_us_cities_data, [
+        [1000, 'Q']
+    ])
     #if config.visual:
     #    config.ax.set_xlim([-0.1, 1.1])
     #    config.ax.set_ylim([-0.1, 1.1])
-    run_dataset('Random', dg.gen_random_data, [
-        [10,    'BGQM'],
-        [100,   'GQM'],
-        [1000,  'QM']
-    ])
+    #run_dataset('Random', dg.gen_random_data, [
+    #    [10,    'BGQM'],
+    #    [100,   'GQM'],
+    #    [1000,  'QM']
+    #])
     #run_dataset('Dense Center', dg.gen_dense_center, [
     #    [10,  'BGQM'],
     #    [100, 'GQM']

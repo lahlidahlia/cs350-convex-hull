@@ -13,6 +13,12 @@ def gen_us_cities_data(amount):
         data = json.load(f)
     return np.array(data)
 
+def gen_major_us_cities_data(amount):
+    data = None
+    with open('major_us_cities.json') as f:
+        data = json.load(f)
+    return np.array(data)
+
 def gen_circle(amount):
     angle_increment = 360/amount
     radius = 0.75
