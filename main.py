@@ -113,26 +113,42 @@ if __name__ == '__main__':
     # Run the following datasets:
     # Each dataset has a list of sizes with
     # corresponding algorithms to run on each size.
-    #run_dataset('US Cities', dg.gen_us_cities_data, [
-    #    [35666, 'GQM']
-    #])
-    #run_dataset('Major US Cities', dg.gen_major_us_cities_data, [
-    #    [998, 'GQM']
-    #])
+    run_dataset('US Cities', dg.gen_us_cities_data, [
+        [35666, 'GQM']
+    ])
+    run_dataset('Major US Cities', dg.gen_major_us_cities_data, [
+        [998, 'GQM']
+    ])
     #if config.visual:
     #    config.ax.set_xlim([-0.1, 1.1])
     #    config.ax.set_ylim([-0.1, 1.1])
     run_dataset('Random', dg.gen_random_data, [
-        #[10,    'BGQM'],
-        #[100,   'GQM'],
-        #[1000,  'GQM']
-        [10000,  'GQM']
-        #[100000,  'QM']
+        [100,     'BGQM'],
+        [200,     'BGQM'],
+        [500,     'BGQM'],
+        [998,     'GQM']
+        [10000,   'GQM']
+        [35666,   'GQM']
+        [100000,  'GQM']
     ])
-    #run_dataset('Dense Center', dg.gen_dense_center, [
-    #    [10,  'BGQM'],
-    #    [100, 'GQM']
-    #])
+    run_dataset('Dense Center', dg.gen_dense_center, [
+        [100,     'BGQM'],
+        [200,     'BGQM'],
+        [500,     'BGQM'],
+        [998,     'GQM']
+        [10000,   'GQM']
+        [35666,   'GQM']
+        [100000,  'GQM']
+    ])
+    run_dataset('Circle', dg.gen_circle, [
+        [100,     'BGQM'],
+        [200,     'BGQM'],
+        [500,     'BGQM'],
+        [998,     'GQM']
+        [10000,   'GQM']
+        [35666,   'GQM']
+        [100000,  'GQM']
+    ])
     #run_dataset('Triangle', dg.gen_triangle, [
     #    [10,  'BGQ'],
     #    [100, 'Q']
@@ -140,7 +156,3 @@ if __name__ == '__main__':
     #if config.visual:
     #    config.ax.set_xlim([-1.1, 1.1])
     #    config.ax.set_ylim([-1.1, 1.1])
-    #run_dataset('Circle', dg.gen_circle, [
-    #    [10,  'GQ'],
-    #    [100, 'G']
-    #])
