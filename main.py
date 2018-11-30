@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import time
 import config
 import random
@@ -16,14 +18,13 @@ def run_dataset(dataset, function, sizes):
     if not config.visual:
         with open(config.timings_file + '.csv', 'a') as results_file:
             results_file.write("%s" % dataset)
-        print('Benchmarking results for %s:' % dataset)
 
     plot = None # Scatter plot
     for size, algos in sizes:
         print("Running {} with {} points".format(dataset, size))
         if config.visual:
             points = function(size)
-            # config.p_area = size somethin'..
+            # TODO: config.p_area = size somethin'..
             x, y = points.T
             plot = config.ax.scatter(x, y, s=config.p_area,
                     c=config.p_color, alpha=config.p_alpha)
@@ -49,9 +50,7 @@ def run_dataset(dataset, function, sizes):
 
                 name, fun = config.algorithms.get(algo)
                 print('\nAlgo:\t'  + name)
-                #print('Median:\t', statistics.median(l_time))
                 print('Mean:\t',   statistics.mean(l_time))
-                #print('Stdev:\t',  statistics.stdev(l_time))
                 if not first:
                     with open('results.csv', 'a') as results_file:
                         results_file.write(",,")
@@ -71,8 +70,8 @@ def run_algorithms(dataset, algos, input_size, points):
         algo = random.choice(algos)
         algos = algos.replace(algo, "")
         algo_name, function = config.algorithms.get(algo)
-        config.image_path = 'frames/%s_%s_%s.png' \
-                % (dataset, algo_name, str(input_size))
+        config.image_path = 'images/%s-%s-%s.png' \
+                % (dataset, algo, str(input_size))
 
         if config.visual:
             if config.lines:
@@ -87,16 +86,24 @@ def run_algorithms(dataset, algos, input_size, points):
         times[algo] = end_time * 1000 # Sec to mSec
 
         # Compare the results to SciPy's
-        #scipy_results = points[ConvexHull(points).vertices]
-        #assert all(i in results for i in scipy_results)
+        scipy_results = points[ConvexHull(points).vertices]
+        assert all(i in results for i in scipy_results)
 
     return times
 
 if __name__ == '__main__':
+    # Each dataset has a list of sizes with
+    # corresponding algorithms to run on each size.
+    us_cities_sizes       = []
+    major_us_cities_sizes = []
+    random_data_sizes     = []
+    dense_center_sizes    = []
+    circle_sizes          = []
+
     if '-v' in argv or '--visual' in argv:
-        # Initialize the visualization
         print("Running with visual mode\n")
-        fig = plt.figure()
+        # Initialize the visualization
+        fig = plt.figure(1)
         config.ax = fig.add_subplot(111)
         config.ax.set_xlabel('X')
         config.ax.set_ylabel('Y')
@@ -104,55 +111,86 @@ if __name__ == '__main__':
         config.timer = config.ax.text(0.9, 0.95, "",
                 ha='center', va='center',
                 transform = config.ax.transAxes)
+
+        us_cities_sizes = [
+            [35666, 'Q']
+        ]
+        major_us_cities_sizes = [
+            [998, 'GQ']
+        ]
+        random_data_sizes = [
+            [10,      'BGQM'],
+            [200,     'BGQM'],
+            [500,     'GQ'],
+            [998,     'GQ'],
+            [10000,   'Q'],
+            [35666,   'Q'],
+            [100000,  'Q']
+        ]
+        dense_center_sizes = [
+            [100,     'BGQM'],
+            [200,     'BGQM'],
+            [500,     'BGQ'],
+            [998,     'GQ'],
+            [10000,   'GQ'],
+            [35666,   'GQ'],
+            [100000,  'GQ']
+        ]
+        circle_sizes = [
+            [100,     'BQM'],
+            [200,     'M']
+        ]
+
     else:
+        print("Running with benchmarking mode\n")
         # Write the first row of the CSV file with titles
         with open(config.timings_file + '.csv', 'w') as results_file:
             results_file.write(
                     'Dataset,Input Size,Algorithm,Mean Timing (ms)\n')
 
+        us_cities_sizes = [
+            [35666, 'GQM']
+        ]
+        major_us_cities_sizes = [
+            [998, 'GQM']
+        ]
+        random_data_sizes = [
+            [10,      'BGQM'],
+            [200,     'BGQM'],
+            [500,     'BGQM'],
+            [998,     'GQM'],
+            [10000,   'GQM'],
+            [35666,   'GQM'],
+            [100000,  'GQM']
+        ]
+        dense_center_sizes = [
+            [100,     'BGQM'],
+            [200,     'BGQM'],
+            [500,     'BGQM'],
+            [998,     'GQM'],
+            [10000,   'GQM'],
+            [35666,   'GQM'],
+            [100000,  'GQM']
+        ]
+        circle_sizes = [
+            [100,     'BGQM'],
+            [200,     'BGQM'],
+            [500,     'BGQM'],
+            [998,     'GQM'],
+            [10000,   'GQM'],
+            [35666,   'GQM'],
+            [100000,  'GQM']
+        ]
+
     # Run the following datasets:
-    # Each dataset has a list of sizes with
-    # corresponding algorithms to run on each size.
-    run_dataset('US Cities', dg.gen_us_cities_data, [
-        [35666, 'GQM']
-    ])
-    run_dataset('Major US Cities', dg.gen_major_us_cities_data, [
-        [998, 'GQM']
-    ])
-    #if config.visual:
-    #    config.ax.set_xlim([-0.1, 1.1])
-    #    config.ax.set_ylim([-0.1, 1.1])
-    run_dataset('Random', dg.gen_random_data, [
-        [100,     'BGQM'],
-        [200,     'BGQM'],
-        [500,     'BGQM'],
-        [998,     'GQM']
-        [10000,   'GQM']
-        [35666,   'GQM']
-        [100000,  'GQM']
-    ])
-    run_dataset('Dense Center', dg.gen_dense_center, [
-        [100,     'BGQM'],
-        [200,     'BGQM'],
-        [500,     'BGQM'],
-        [998,     'GQM']
-        [10000,   'GQM']
-        [35666,   'GQM']
-        [100000,  'GQM']
-    ])
-    run_dataset('Circle', dg.gen_circle, [
-        [100,     'BGQM'],
-        [200,     'BGQM'],
-        [500,     'BGQM'],
-        [998,     'GQM']
-        [10000,   'GQM']
-        [35666,   'GQM']
-        [100000,  'GQM']
-    ])
-    #run_dataset('Triangle', dg.gen_triangle, [
-    #    [10,  'BGQ'],
-    #    [100, 'Q']
-    #])
-    #if config.visual:
-    #    config.ax.set_xlim([-1.1, 1.1])
-    #    config.ax.set_ylim([-1.1, 1.1])
+    run_dataset('US Cities',       dg.gen_us_cities_data,       us_cities_sizes)
+    run_dataset('Major US Cities', dg.gen_major_us_cities_data, major_us_cities_sizes)
+    if config.visual:
+        config.ax.set_xlim([-0.05, 1.05])
+        config.ax.set_ylim([-0.05, 1.15])
+    run_dataset('Random',          dg.gen_random_data,          random_data_sizes)
+    run_dataset('Dense Center',    dg.gen_dense_center,         dense_center_sizes)
+    if config.visual:
+        config.ax.set_xlim([-1.05, 1.05])
+        config.ax.set_ylim([-1.05, 1.15])
+    run_dataset('Circle',          dg.gen_circle,               circle_sizes)

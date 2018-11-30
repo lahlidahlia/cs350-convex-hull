@@ -25,17 +25,17 @@ def lr_most_point(points):
             rightMost = point
     return (leftMost, rightMost)
 
-def dist(P, Q, C):
+def dist(A, B, C):
     '''
     Returns the shortest distance between the point C,
-    and the line segment connected by P and Q.
+    and the line segment connected by A and B.
     '''
-    A = np.subtract(P, C)
-    B = np.subtract(P, Q)
-    magB = np.linalg.norm(B)
+    P = A - C
+    Q = A - B
+    magQ = np.linalg.norm(Q)
 
-    proj = (np.dot(A, B) / (magB*magB)) * B
-    return np.linalg.norm(np.subtract(A, proj))
+    proj = (np.dot(P, Q) / (magQ*magQ)) * Q
+    return np.linalg.norm(P - proj)
 
 
 def sort_by_x(points):

@@ -14,22 +14,22 @@ def brute_force(points, start_time):
     unlike the other algorithms that have their results in-order.
     '''
     result = []
-    convex_points = []
-    c_x = []
-    c_y = []
+    lines = []
+    if config.visual:
+        lines.append(config.ax.plot((0,0), (0,0), c=config.c_color,
+                alpha=config.c_alpha, label=config.c_label))
     for i in points:
         for j in points:
             if (i == j).all():
                 continue
             side = 0
-            update = False
+            ItoJ = j - i
             for k in points:
                 if (i == k).all() or (j == k).all():
                     continue
-                ItoJ = np.subtract(j, i)
-                ItoK = np.subtract(i, k)
+                ItoK = i - k
                 newSide = np.cross(ItoJ, ItoK)
-                if newSide != 0:
+                if newSide != 0:# Makes sure the three lines are not collinear
                     if side == 0:
                         side = newSide
                     elif (side < 0 and newSide > 0) or \
@@ -37,29 +37,28 @@ def brute_force(points, start_time):
                         side = False
                         break
             if side:
-                if all(i not in q for q in result):
-                    result.append(i)
+                i_is_new = all(i not in q for q in result)
+                j_is_new = all(j not in q for q in result)
+                if i_is_new or j_is_new:
+                    if i_is_new:
+                        result.append(i)
+                    if j_is_new:
+                        result.append(j)
                     if config.visual:
-                        update = True
-                        c_x.append(i[0])
-                        c_y.append(i[1])
-                if all(j not in q for q in result):
-                    result.append(j)
-                    if config.visual:
-                        update = True
-                        c_x.append(j[0])
-                        c_y.append(j[1])
-                if config.visual and update:
-                    if convex_points:
-                        convex_points.remove()
-                    convex_points = config.ax.scatter(c_x, c_y,
-                            s=config.p_area, c=config.c_color,
-                            alpha=config.c_alpha, label=config.c_label)
+                        lines.append(config.ax.plot(
+                                (i[0], j[0]), (i[1], j[1]),
+                                color=config.c_color, alpha=config.c_alpha))
+                        draw(start_time)
+                elif config.visual: # TODO: This happens too many times
+                    lines.append(config.ax.plot(
+                            (i[0], j[0]), (i[1], j[1]),
+                            color=config.c_color, alpha=config.c_alpha))
                     draw(start_time)
 
     if config.visual:
         plt.savefig(config.image_path)
-        convex_points.remove()
+        for line in lines:
+            line.pop(0).remove()
     return np.array(result)
 
 def gift_wrap(points, start_time):
@@ -80,28 +79,27 @@ def gift_wrap(points, start_time):
 
     N = len(points)
     endPoint = np.array([])
-    i = 0
     while True:
         result.append(pointOnHull)
         endPoint = points[0]
-        oldLine = np.subtract(endPoint,  result[i])
+        oldLine = endPoint - result[-1]
 
         if config.visual:
-            x, y = np.vstack((endPoint,  result[i])).T
+            x, y = np.vstack((endPoint,  result[-1])).T
             if next_guess:
                 next_guess.pop(0).remove()
             next_guess = config.ax.plot(x, y, c=config.n_color,
                     alpha=config.n_alpha, label=config.n_label)
             draw(start_time)
         for j in range(1, N):
-            newLine = np.subtract(points[j], result[i])
+            newLine = points[j] - result[-1]
            
             if (endPoint == pointOnHull).all() \
                     or np.cross(newLine, oldLine) < 0:
                 endPoint = points[j]
-                oldLine = np.subtract(endPoint,  result[i])
+                oldLine = endPoint - result[-1]
                 if config.visual:
-                    x, y = np.vstack((endPoint,  result[i])).T
+                    x, y = np.vstack((endPoint,  result[-1])).T
                     next_guess.pop(0).remove()
                     next_guess = config.ax.plot(x, y, c=config.n_color,
                             alpha=config.n_alpha, label=config.n_label)
@@ -118,7 +116,6 @@ def gift_wrap(points, start_time):
             config.lines = config.ax.plot(c_x, c_y, c=config.c_color,
                     alpha=config.c_alpha, label=config.c_label)
 
-        i += 1
         pointOnHull = endPoint
 
         if (endPoint == result[0]).all():
@@ -139,36 +136,31 @@ def quickhull(points, start_time):
     if points.size == 0:
         return []
 
-    A, B = utils.lr_most_point(points)
-    result = []
-    result.append(A)
-    result.append(B)
-
+    L, R = utils.lr_most_point(points)
+    result = [L, R]
     if config.visual:
-        x, y = np.vstack((A, B)).T
+        x, y = np.vstack((L, R)).T
         config.lines = config.ax.plot(x, y, c=config.c_color,
                 alpha=config.c_alpha, label=config.c_label)
     S1 = []
     S2 = []
-    N = len(points)
-    oldLine = np.subtract(result[0], result[1])
-    for i in range(N):
-        newLine = np.subtract(result[0], points[i])
+    oldLine = L - R
+    for point in points:
+        newLine = L - point
         if np.cross(oldLine, newLine) > 0:
-            S1.append(points[i])
-        elif (points[i] != result[0]).all() \
-                and (points[i] != result[1]).all():
-            S2.append(points[i])
+            S1.append(point)
+        elif (point != L).all() and (point != R).all():
+            S2.append(point)
 
-    find_hull(S1, result[0],  result[1], 1,           result, start_time)
-    find_hull(S2, result[-1], result[0], len(result), result, start_time)
+    find_hull(S1, L, R, 1,           result, start_time)
+    find_hull(S2, R, L, len(result), result, start_time)
     if config.visual:
         draw(start_time)
         plt.savefig(config.image_path)
 
     return np.array(result)
 
-def find_hull(Sk, P, Q, index, result, start_time):
+def find_hull(Sk, A, B, index, result, start_time):
     '''
     Recursive function for  the Quickhull algorithm
     that takes in the set of points to the right of the
@@ -184,10 +176,10 @@ def find_hull(Sk, P, Q, index, result, start_time):
 
     S1 = []
     S2 = []
-    C = []
+    C = np.array([])
     dist_C = 0
     for point in Sk:
-        dist_Point = utils.dist(P, Q, point)
+        dist_Point = utils.dist(A, B, point)
         if dist_C < dist_Point:
             if config.visual:
                 if next_guess:
@@ -212,19 +204,19 @@ def find_hull(Sk, P, Q, index, result, start_time):
         config.lines = config.ax.plot(x, y, c=config.c_color,
                 alpha=config.c_alpha, label=config.c_label)
 
-    PtoC = np.subtract(P, C)
-    CtoQ = np.subtract(C, Q)
+    AtoC = A - C
+    CtoB = C - B
     for point in Sk:
-        CtoPoint = np.subtract(C, point)
-        if np.cross(PtoC, CtoPoint)   > 0:
+        CtoPoint = C - point
+        if np.cross(AtoC, CtoPoint)   > 0:
             S1.append(point)
-        elif np.cross(CtoQ, CtoPoint) > 0:
+        elif np.cross(CtoB, CtoPoint) > 0:
             S2.append(point)
 
     orig_len = len(result)
-    find_hull(S1, P, C, index, result, start_time)
+    find_hull(S1, A, C, index, result, start_time)
     next_index = len(result) - orig_len + index + 1
-    find_hull(S2, C, Q, next_index, result, start_time)
+    find_hull(S2, C, B, next_index, result, start_time)
 
 
 def monotone_chain(points, start_time):
